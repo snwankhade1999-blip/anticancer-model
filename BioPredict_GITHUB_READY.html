@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>BioPredict AI — Trastuzumab Biosimilar Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;900&family=DM+Sans:wght@300;400;500;600&family=Space+Mono:wght@400;700&display=swap&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal:#0d9488; --teal-l:#14b8a6; --teal-p:#ccfbf1;
+  --emerald:#059669; --gold:#f59e0b; --gold-l:#fcd34d;
+  --rose:#e11d48; --lav:#7c3aed; --sky:#0ea5e9;
+  --s50:#f8fafc; --s100:#f1f5f9; --s200:#e2e8f0;
+  --s300:#cbd5e1; --s400:#94a3b8; --s600:#475569;
+  --s700:#334155; --s800:#1e293b;
+  --grad:linear-gradient(135deg,#0f766e 0%,#0369a1 50%,#7c3aed 100%);
+  --grad2:linear-gradient(135deg,#0f766e,#0c4a6e 40%,#4c1d95);
+  --sh:0 4px 20px rgba(13,148,136,.12),0 2px 8px rgba(0,0,0,.06);
+  --shx:0 20px 60px rgba(13,148,136,.15),0 8px 25px rgba(0,0,0,.08);
+  --r:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:#f0fdfa;overflow-x:hidden;font-size:14px}
+
+/* ── SCREENS ── */
+.screen{display:none;min-height:100vh;animation:fadeIn .4s ease}
+.screen.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── TOP NAV (desktop) ── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(255,255,255,.94);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--s200);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:60px;
+}
+.nav-logo{display:flex;align-items:center;gap:9px;cursor:pointer}
+.nav-logo-icon{width:34px;height:34px;border-radius:9px;background:var(--grad);display:flex;align-items:center;justify-content:center}
+.nav-logo-icon svg{width:18px;height:18px}
+.nav-brand{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--s800)}
+.nav-brand span{color:var(--teal)}
+.nav-tabs{display:flex;gap:2px}
+.nav-tab{padding:7px 14px;border-radius:7px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;color:var(--s600);cursor:pointer;transition:all .2s;white-space:nowrap}
+.nav-tab:hover,.nav-tab.active{background:var(--teal-p);color:var(--teal)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.nav-avatar{width:34px;height:34px;border-radius:50%;background:var(--grad);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:12px;cursor:pointer;flex-shrink:0}
+
+/* ── BOTTOM NAV (mobile) ── */
+.bottom-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;z-index:200;
+  background:rgba(255,255,255,.97);backdrop-filter:blur(20px);
+  border-top:1px solid var(--s200);
+  align-items:center;justify-content:space-around;
+  padding:8px 4px 8px;height:64px;
+}
+.bnav-item{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 12px;border-radius:10px;border:none;background:transparent;cursor:pointer;transition:all .2s;color:var(--s400);font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;min-width:56px}
+.bnav-item svg{width:20px;height:20px}
+.bnav-item.active{color:var(--teal);background:var(--teal-p)}
+.bnav-item span{font-size:10px}
+
+/* ════ SCREEN 1: LOGIN ════ */
+#screen-login{
+  min-height:100vh;
+  background:var(--grad2);
+  display:flex;align-items:center;justify-content:center;
+  padding:20px;position:relative;overflow:hidden;
+}
+.orb{position:absolute;border-radius:50%;background:rgba(255,255,255,.05);pointer-events:none}
+.o1{width:500px;height:500px;top:-150px;right:-150px;animation:orb 9s ease-in-out infinite}
+.o2{width:350px;height:350px;bottom:-80px;left:-100px;animation:orb 7s ease-in-out infinite 3s}
+.o3{width:200px;height:200px;top:40%;left:15%;animation:orb 5s ease-in-out infinite 5s}
+@keyframes orb{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-18px) scale(1.04)}}
+
+.login-wrap{position:relative;z-index:2;width:100%;max-width:980px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.login-hero h1{font-family:'Playfair Display',serif;font-size:46px;font-weight:900;color:#fff;line-height:1.1;margin-bottom:16px}
+.login-hero h1 em{font-style:normal;color:var(--gold-l)}
+.login-hero p{font-size:15px;color:rgba(255,255,255,.75);line-height:1.7;margin-bottom:28px}
+.login-stats{display:flex;gap:20px;flex-wrap:wrap}
+.ls{text-align:center}
+.ls-n{font-family:'Space Mono',monospace;font-size:26px;font-weight:700;color:var(--gold-l)}
+.ls-l{font-size:10px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+.mol-svg{opacity:.55;margin-top:28px;max-width:260px}
+
+.login-card{background:rgba(255,255,255,.98);border-radius:20px;padding:36px;box-shadow:0 32px 80px rgba(0,0,0,.28)}
+.lc-icon{width:52px;height:52px;border-radius:14px;background:var(--grad);margin:0 auto 14px;display:flex;align-items:center;justify-content:center}
+.lc-icon svg{width:26px;height:26px}
+.lc-title{font-family:'Playfair Display',serif;font-size:24px;color:var(--s800);text-align:center}
+.lc-sub{font-size:12px;color:var(--s400);text-align:center;margin-top:3px;margin-bottom:24px}
+.tab-sw{display:flex;background:var(--s100);border-radius:9px;padding:3px;margin-bottom:22px}
+.tb{flex:1;padding:8px;border-radius:7px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;background:transparent;color:var(--s400)}
+.tb.active{background:#fff;color:var(--teal);box-shadow:var(--sh)}
+.fg{margin-bottom:15px}
+.fl{font-size:11px;font-weight:600;color:var(--s600);display:block;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+.fi{width:100%;padding:11px 13px;border-radius:9px;border:1.5px solid var(--s200);background:var(--s50);font-family:'DM Sans',sans-serif;font-size:14px;color:var(--s800);outline:none;transition:all .2s;-webkit-appearance:none}
+.fi:focus{border-color:var(--teal);background:#fff;box-shadow:0 0 0 3px rgba(13,148,136,.1)}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn-p{width:100%;padding:13px;border-radius:9px;border:none;background:var(--grad);color:#fff;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;box-shadow:0 4px 15px rgba(13,148,136,.3)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(13,148,136,.4)}
+.btn-p:active{transform:translateY(0)}
+.div{display:flex;align-items:center;gap:10px;margin:16px 0}
+.div hr{flex:1;border:none;border-top:1px solid var(--s200)}
+.div span{font-size:11px;color:var(--s400)}
+.soc{display:flex;gap:8px}
+.sb{flex:1;padding:9px 6px;border-radius:7px;border:1.5px solid var(--s200);background:#fff;font-size:11px;font-weight:500;color:var(--s600);cursor:pointer;text-align:center;transition:all .2s}
+.sb:hover{border-color:var(--teal);color:var(--teal)}
+.comply{text-align:center;margin-top:14px;font-size:10px;color:var(--s400)}
+
+/* ════ SHARED LAYOUT ════ */
+.page-wrap{padding-top:60px}
+.hero-section{background:var(--grad);padding:36px 24px 72px;position:relative;overflow:hidden}
+.hero-dots{position:absolute;inset:0;background-image:radial-gradient(circle at 20px 20px,rgba(255,255,255,.05) 1px,transparent 0);background-size:36px 36px}
+.hero-inner{position:relative;z-index:2;max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:20px;padding:5px 13px;font-size:11px;color:rgba(255,255,255,.9);margin-bottom:12px;backdrop-filter:blur(10px)}
+.hero-badge::before{content:'●';color:var(--gold-l);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.hero-title{font-family:'Playfair Display',serif;font-size:30px;color:#fff;font-weight:700;margin-bottom:6px}
+.hero-sub{color:rgba(255,255,255,.72);font-size:13px}
+.acc-badge{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:12px;padding:12px 18px;text-align:center;white-space:nowrap}
+.acc-n{font-family:'Space Mono',monospace;font-size:28px;color:var(--gold-l);font-weight:700}
+.acc-l{font-size:10px;color:rgba(255,255,255,.7)}
+
+.content-area{max-width:1140px;margin:0 auto;padding:24px}
+
+/* ── KPI STRIP ── */
+.kpi-strip{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin:-44px auto 0;padding:0 24px;max-width:1140px;position:relative;z-index:10}
+.kpi{background:#fff;border-radius:var(--r);padding:20px;box-shadow:var(--shx);border:1px solid rgba(255,255,255,.8);display:flex;align-items:flex-start;gap:12px}
+.kpi-ico{width:42px;height:42px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
+.kpi-ico svg{width:20px;height:20px}
+.kpi-ico.t{background:#ccfbf1}.kpi-ico.g{background:#fef3c7}.kpi-ico.r{background:#ffe4e6}.kpi-ico.b{background:#e0f2fe}
+.kpi-n{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--s800);line-height:1}
+.kpi-lbl{font-size:11px;color:var(--s400);margin-top:3px}
+.kpi-ch{font-size:10px;font-weight:600;margin-top:5px}
+.kpi-ch.up{color:var(--emerald)}.kpi-ch.dn{color:var(--rose)}
+
+/* ── CARDS ── */
+.card{background:#fff;border-radius:var(--r);padding:22px;box-shadow:var(--sh);border:1px solid var(--s200)}
+.ct{font-family:'Playfair Display',serif;font-size:17px;color:var(--s800);margin-bottom:3px}
+.cs{font-size:11px;color:var(--s400);margin-bottom:18px}
+
+/* GRID LAYOUTS */
+.g2{display:grid;grid-template-columns:2fr 1fr;gap:20px}
+.g1{display:grid;grid-template-columns:1fr;gap:20px}
+.g22{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.full{grid-column:1/-1}
+.gap{display:flex;flex-direction:column;gap:18px}
+
+/* ── CHARTS ── */
+.chart-box{position:relative;height:200px}
+.chart-box canvas{width:100%!important;height:100%!important}
+.cleg{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px}
+.cli{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--s600)}
+.cld{width:9px;height:9px;border-radius:50%}
+
+/* ── BIOSIMILAR LIST ── */
+.bio-list{display:flex;flex-direction:column;gap:10px}
+.bio-item{display:flex;align-items:center;gap:10px;padding:11px;border-radius:9px;background:var(--s50);border:1px solid var(--s200);cursor:pointer;transition:all .2s}
+.bio-item:hover{background:var(--teal-p);border-color:var(--teal)}
+.bio-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.bio-name{font-size:13px;font-weight:600;color:var(--s700);flex:1;min-width:60px}
+.bio-bar{flex:1;height:4px;background:var(--s200);border-radius:2px;overflow:hidden;min-width:40px}
+.bio-fill{height:100%;border-radius:2px;background:var(--grad)}
+.bio-pct{font-family:'Space Mono',monospace;font-size:12px;color:var(--teal);font-weight:700;min-width:30px;text-align:right}
+
+/* ── ACTIVITY ── */
+.act-list{display:flex;flex-direction:column;gap:10px}
+.act-item{display:flex;gap:10px}
+.act-dot-col{display:flex;flex-direction:column;align-items:center}
+.act-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:4px}
+.act-line{width:1px;height:24px;background:var(--s200)}
+.act-txt{font-size:12px;color:var(--s600);line-height:1.5}
+.act-time{font-size:10px;color:var(--s400)}
+
+/* ── COMBO THERAPY ── */
+.combo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.combo-card{padding:16px;border-radius:11px;border:1px solid}
+.combo-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.combo-n{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;color:var(--s800)}
+.combo-sub{font-size:11px;color:var(--s400);margin-top:3px;margin-bottom:10px}
+.combo-bar-bg{height:5px;border-radius:3px;overflow:hidden}
+.combo-bar-fill{height:100%;border-radius:3px}
+
+/* ── PARAM SLIDERS ── */
+.param-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.pl{font-size:11px;font-weight:600;color:var(--s600);display:block;margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px}
+.ps-wrap{display:flex;align-items:center;gap:10px}
+.ps{flex:1;-webkit-appearance:none;height:4px;border-radius:2px;background:var(--s200);outline:none}
+.ps::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--teal);cursor:pointer;box-shadow:0 2px 8px rgba(13,148,136,.4)}
+.ps::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--teal);cursor:pointer;border:none}
+.pv{font-family:'Space Mono',monospace;font-size:12px;color:var(--teal);font-weight:700;min-width:32px;text-align:right}
+
+/* ── SCENARIO TABS ── */
+.sc-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
+.sc-tab{padding:7px 14px;border-radius:7px;border:1.5px solid var(--s200);background:#fff;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--s600)}
+.sc-tab.active.op{background:#ecfdf5;border-color:var(--emerald);color:var(--emerald)}
+.sc-tab.active.ba{background:#eff6ff;border-color:#3b82f6;color:#3b82f6}
+.sc-tab.active.pe{background:#fef2f2;border-color:var(--rose);color:var(--rose)}
+
+/* ── FACTOR BARS ── */
+.fb-list{display:flex;flex-direction:column;gap:12px}
+.fb-hdr{display:flex;justify-content:space-between;margin-bottom:5px}
+.fb-name{font-size:12px;color:var(--s700);font-weight:500}
+.fb-pct{font-family:'Space Mono',monospace;font-size:11px;color:var(--teal);font-weight:700}
+.fb-bg{height:7px;background:var(--s100);border-radius:4px;overflow:hidden}
+.fb-fill{height:100%;border-radius:4px}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tbl{width:100%;border-collapse:collapse;min-width:480px}
+.tbl th{padding:11px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--s400);text-transform:uppercase;letter-spacing:.5px;border-bottom:2px solid var(--s100);white-space:nowrap}
+.tbl td{padding:13px 14px;font-size:13px;color:var(--s700);border-bottom:1px solid var(--s100)}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:var(--s50)}
+.year-c{font-family:'Space Mono',monospace;font-weight:700;color:var(--s800)}
+.adop-c{font-family:'Space Mono',monospace;font-weight:700;color:var(--teal)}
+.pm{width:70px;height:5px;background:var(--s100);border-radius:3px;overflow:hidden}
+.pmf{height:100%;border-radius:3px;background:var(--grad)}
+
+/* ── BTN RUN ── */
+.btn-run{padding:12px 26px;border-radius:9px;border:none;background:var(--grad);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .25s;box-shadow:0 4px 15px rgba(13,148,136,.3);display:flex;align-items:center;gap:7px}
+.btn-run:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(13,148,136,.4)}
+.btn-run:active{transform:translateY(0)}
+@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+.spinning{animation:spin 1s linear infinite}
+
+/* ── ANALYTICS ── */
+.reg-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.rs{background:var(--s50);border-radius:10px;padding:14px;text-align:center;border:1px solid var(--s200)}
+.rs-v{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--teal)}
+.rs-l{font-size:10px;color:var(--s400);margin-top:3px}
+.hypo-list{display:flex;flex-direction:column;gap:8px}
+.hy-item{display:flex;align-items:center;gap:12px;padding:11px 13px;background:var(--s50);border-radius:9px;border:1px solid var(--s200)}
+.hy-st{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+.hy-st.ok{background:#ecfdf5}
+.hy-txt{font-size:12px;color:var(--s700);flex:1}
+.hy-pv{font-family:'Space Mono',monospace;font-size:11px;color:var(--teal);font-weight:700;white-space:nowrap}
+.met-card{background:#fff;border-radius:var(--r);padding:20px;border:1px solid var(--s200);box-shadow:var(--sh);position:relative;overflow:hidden}
+.met-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.met-card.tc::before{background:linear-gradient(90deg,var(--teal),var(--emerald))}
+.met-card.gc::before{background:linear-gradient(90deg,var(--gold),#f97316)}
+.met-card.lc::before{background:linear-gradient(90deg,var(--lav),#ec4899)}
+.ml{font-size:10px;font-weight:600;color:var(--s400);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px}
+.mv{font-family:'Space Mono',monospace;font-size:30px;font-weight:700;color:var(--s800)}
+.ms{font-size:11px;color:var(--s400);margin-top:3px}
+.mini-ch{display:flex;align-items:flex-end;gap:3px;height:50px;margin-top:14px}
+.mc-bar{flex:1;border-radius:3px 3px 0 0;background:var(--grad);min-height:4px}
+
+/* ── ADMIN ── */
+.admin-layout{display:flex;min-height:calc(100vh - 60px)}
+.admin-side{width:220px;background:#fff;border-right:1px solid var(--s200);padding:20px 14px;flex-shrink:0;display:flex;flex-direction:column}
+.aside-ttl{font-size:10px;font-weight:600;color:var(--s400);text-transform:uppercase;letter-spacing:1px;padding:0 7px;margin-bottom:10px}
+.asi{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:7px;font-size:13px;font-weight:500;color:var(--s600);cursor:pointer;transition:all .2s;margin-bottom:2px}
+.asi:hover,.asi.active{background:var(--teal-p);color:var(--teal)}
+.adot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.adm-content{flex:1;padding:28px 24px}
+.adm-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+.adm-hdr h1{font-family:'Playfair Display',serif;font-size:24px;color:var(--s800)}
+.adm-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.asc{background:#fff;border-radius:12px;padding:18px;border:1px solid var(--s200);box-shadow:var(--sh)}
+.asc-n{font-family:'Space Mono',monospace;font-size:26px;font-weight:700}
+.asc-l{font-size:12px;color:var(--s400);margin-top:3px}
+.users-tbl-wrap{background:#fff;border-radius:var(--r);box-shadow:var(--sh);overflow:hidden;border:1px solid var(--s200)}
+.utbl{width:100%;border-collapse:collapse;min-width:560px}
+.utbl th{padding:12px 16px;text-align:left;font-size:10px;font-weight:600;color:var(--s400);text-transform:uppercase;letter-spacing:.5px;background:var(--s50);border-bottom:1px solid var(--s200)}
+.utbl td{padding:13px 16px;font-size:12px;color:var(--s700);border-bottom:1px solid var(--s100)}
+.utbl tr:last-child td{border-bottom:none}
+.utbl tr:hover td{background:var(--s50)}
+.uav-c{display:flex;align-items:center;gap:9px}
+.uav{width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff}
+.unm{font-weight:600;color:var(--s800);font-size:12px}
+.uem{font-size:10px;color:var(--s400)}
+.rbadge{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.rb-admin{background:#ede9fe;color:var(--lav)}
+.rb-analyst{background:#ccfbf1;color:var(--teal)}
+.rb-viewer{background:var(--s100);color:var(--s600)}
+.sts{display:flex;align-items:center;gap:4px;font-size:11px}
+.sts::before{content:'●'}
+.sts-a{color:var(--emerald)}.sts-i{color:var(--s400)}
+.act-btn{padding:5px 10px;border-radius:5px;border:1px solid var(--s200);background:#fff;font-size:11px;color:var(--s600);cursor:pointer;transition:all .2s;margin-right:4px}
+.act-btn:hover{border-color:var(--teal);color:var(--teal);background:var(--teal-p)}
+.plan-card{background:var(--grad);border-radius:11px;padding:14px;color:#fff;margin-top:auto;margin-top:20px}
+.btn-add{padding:9px 18px;border-radius:7px;border:none;background:var(--grad);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:5px}
+.btn-add:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(13,148,136,.3)}
+.exp-btns{display:flex;gap:8px;flex-wrap:wrap}
+.btn-exp{padding:9px 16px;border-radius:7px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;backdrop-filter:blur(10px)}
+.btn-exp:hover{background:rgba(255,255,255,.2)}
+
+/* ── MODEL INFO BOX ── */
+.model-info{padding:13px;background:linear-gradient(135deg,#f0fdfa,#e0f2fe);border-radius:9px;border:1px solid #99f6e4;margin-top:20px}
+.mi-ttl{font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:1px;margin-bottom:7px}
+.mi-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:11px;color:var(--s600)}
+
+/* scrollbar */
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-track{background:var(--s100)}
+::-webkit-scrollbar-thumb{background:var(--teal-l);border-radius:3px}
+
+/* ═══════════════════════════════════
+   RESPONSIVE BREAKPOINTS
+═══════════════════════════════════ */
+
+/* Tablet ≤ 900px */
+@media(max-width:900px){
+  .nav-tabs{display:none}
+  .bottom-nav{display:flex}
+  .page-wrap{padding-top:60px;padding-bottom:calc(60px + env(safe-area-inset-bottom))}
+  #screen-login{padding-bottom:20px}
+  .login-wrap{grid-template-columns:1fr;gap:30px}
+  .login-hero{text-align:center}
+  .login-hero h1{font-size:36px}
+  .login-stats{justify-content:center}
+  .mol-svg{display:none}
+  .kpi-strip{grid-template-columns:1fr 1fr;padding:0 16px}
+  .g2{grid-template-columns:1fr}
+  .g22{grid-template-columns:1fr 1fr}
+  .g3,.combo-grid{grid-template-columns:1fr 1fr}
+  .hero-section{padding:28px 16px 68px}
+  .hero-title{font-size:24px}
+  .content-area{padding:16px}
+  .param-grid{grid-template-columns:1fr}
+  .reg-grid{grid-template-columns:1fr 1fr}
+  .adm-stats{grid-template-columns:1fr 1fr}
+  .admin-side{display:none}
+  .hero-inner{flex-direction:column;align-items:flex-start}
+  .acc-badge{align-self:flex-start}
+}
+
+/* Mobile ≤ 600px */
+@media(max-width:600px){
+  body{font-size:13px}
+  .kpi-strip{grid-template-columns:1fr 1fr;gap:10px;padding:0 12px;margin-top:-36px}
+  .kpi{padding:14px;gap:10px}
+  .kpi-n{font-size:18px}
+  .kpi-lbl{font-size:10px}
+  .kpi-ch{font-size:9px}
+  .kpi-ico{width:36px;height:36px;border-radius:9px}
+  .g22{grid-template-columns:1fr}
+  .g3,.combo-grid{grid-template-columns:1fr}
+  .adm-stats{grid-template-columns:1fr}
+  .card{padding:16px}
+  .ct{font-size:15px}
+  .chart-box{height:170px}
+  .hero-section{padding:22px 14px 64px}
+  .hero-title{font-size:21px}
+  .content-area{padding:12px}
+  .fr{grid-template-columns:1fr}
+  .login-card{padding:24px 20px}
+  .lc-title{font-size:21px}
+  .login-hero h1{font-size:30px}
+  .login-hero p{font-size:13px}
+  .reg-grid{grid-template-columns:1fr 1fr}
+  .adm-stats{grid-template-columns:1fr 1fr}
+  .adm-hdr{flex-direction:column;align-items:flex-start}
+  .sc-tabs{gap:4px}
+  .sc-tab{padding:6px 10px;font-size:11px}
+  .mi-grid{grid-template-columns:1fr}
+  .adm-content{padding:16px 14px}
+  .exp-btns{gap:6px}
+  .btn-exp{padding:7px 12px;font-size:11px}
+  .combo-n{font-size:24px}
+  .nav{padding:0 14px}
+  .nav-brand{font-size:15px}
+  .acc-badge{padding:9px 13px}
+  .acc-n{font-size:24px}
+}
+
+/* Very small ≤ 380px */
+@media(max-width:380px){
+  .kpi-strip{grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:11px;gap:8px}
+  .kpi-ico{width:32px;height:32px}
+  .kpi-n{font-size:16px}
+  .hero-title{font-size:19px}
+  .login-hero h1{font-size:26px}
+  .ls-n{font-size:22px}
+  .bnav-item{min-width:44px;padding:5px 8px}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ TOP NAV (desktop) ══ -->
+<nav class="nav" id="main-nav" style="display:none">
+  <div class="nav-logo" onclick="go('dashboard')">
+    <div class="nav-logo-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M9 3H5a2 2 0 00-2 2v4m6-6h10a2 2 0 012 2v4M9 3v18m0 0h10a2 2 0 002-2V9M9 21H5a2 2 0 01-2-2V9m0 0h18"/></svg></div>
+    <span class="nav-brand">Bio<span>Predict</span> AI</span>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab" data-s="dashboard" onclick="go('dashboard')">Dashboard</button>
+    <button class="nav-tab" data-s="core" onclick="go('core')">Prediction Model</button>
+    <button class="nav-tab" data-s="analytics" onclick="go('analytics')">Analytics</button>
+    <button class="nav-tab" data-s="admin" onclick="go('admin')">Admin</button>
+  </div>
+  <div class="nav-right">
+    <div style="text-align:right;display:none" id="nav-user-info">
+      <div style="font-size:12px;font-weight:600;color:var(--s800)">Dr. Shweta W.</div>
+      <div style="font-size:10px;color:var(--s400)">Senior Analyst</div>
+    </div>
+    <div class="nav-avatar">SW</div>
+  </div>
+</nav>
+
+<!-- ══ BOTTOM NAV (mobile) ══ -->
+<nav class="bottom-nav" id="bottom-nav" style="display:none">
+  <button class="bnav-item" data-s="dashboard" onclick="go('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    <span>Dashboard</span>
+  </button>
+  <button class="bnav-item" data-s="core" onclick="go('core')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 100 20 10 10 0 000-20z"/><path d="M12 8v4l3 3"/></svg>
+    <span>Predict</span>
+  </button>
+  <button class="bnav-item" data-s="analytics" onclick="go('analytics')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+    <span>Analytics</span>
+  </button>
+  <button class="bnav-item" data-s="admin" onclick="go('admin')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+    <span>Admin</span>
+  </button>
+</nav>
+
+<!-- ══════════════ SCREEN 1: LOGIN ══════════════ -->
+<div id="screen-login" class="screen active">
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+  <div class="login-wrap">
+    <div class="login-hero">
+      <h1>AI-Powered<br><em>Biosimilar</em><br>Market Oracle</h1>
+      <p>Predict trastuzumab biosimilar adoption up to 5 years ahead — built on oncology data from 100+ healthcare professionals across India.</p>
+      <div class="login-stats">
+        <div class="ls"><div class="ls-n">79.4%</div><div class="ls-l">Model Accuracy</div></div>
+        <div class="ls"><div class="ls-n">5yr</div><div class="ls-l">Forecast Horizon</div></div>
+        <div class="ls"><div class="ls-n">8</div><div class="ls-l">Key Predictors</div></div>
+      </div>
+      <svg class="mol-svg" viewBox="0 0 260 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="130" cy="90" r="65" stroke="rgba(255,255,255,.15)" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <circle cx="130" cy="90" r="45" stroke="rgba(255,255,255,.2)" stroke-width="1.5"/>
+        <circle cx="130" cy="90" r="28" stroke="rgba(255,255,255,.3)" stroke-width="2"/>
+        <circle cx="130" cy="90" r="11" fill="rgba(245,158,11,.85)"/>
+        <circle cx="195" cy="90" r="7" fill="rgba(20,184,166,.8)"/>
+        <circle cx="65" cy="90" r="7" fill="rgba(20,184,166,.8)"/>
+        <circle cx="130" cy="25" r="7" fill="rgba(124,58,237,.8)"/>
+        <circle cx="130" cy="155" r="7" fill="rgba(124,58,237,.8)"/>
+        <circle cx="182" cy="48" r="5" fill="rgba(255,255,255,.6)"/>
+        <circle cx="78" cy="132" r="5" fill="rgba(255,255,255,.6)"/>
+        <circle cx="78" cy="48" r="5" fill="rgba(14,165,233,.7)"/>
+        <circle cx="182" cy="132" r="5" fill="rgba(14,165,233,.7)"/>
+        <line x1="130" y1="90" x2="195" y2="90" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <line x1="130" y1="90" x2="65" y2="90" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <line x1="130" y1="90" x2="130" y2="25" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <line x1="130" y1="90" x2="130" y2="155" stroke="rgba(255,255,255,.3)" stroke-width="1.5"/>
+        <line x1="130" y1="90" x2="182" y2="48" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+        <line x1="130" y1="90" x2="78" y2="132" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
+        <text x="126" y="94" font-size="7" fill="white" font-weight="bold">HER2</text>
+        <circle cx="130" cy="25" r="3" fill="#fcd34d"><animateTransform attributeName="transform" type="rotate" from="0 130 90" to="360 130 90" dur="6s" repeatCount="indefinite"/></circle>
+        <circle cx="195" cy="90" r="3" fill="#22d3ee"><animateTransform attributeName="transform" type="rotate" from="0 130 90" to="-360 130 90" dur="4s" repeatCount="indefinite"/></circle>
+      </svg>
+    </div>
+
+    <div class="login-card">
+      <div class="lc-icon"><svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <div class="lc-title">Welcome Back</div>
+      <div class="lc-sub">Access your BioPredict AI workspace</div>
+      <div class="tab-sw">
+        <button class="tb active" id="tb-li" onclick="switchTab('li')">Sign In</button>
+        <button class="tb" id="tb-reg" onclick="switchTab('reg')">Register</button>
+      </div>
+      <div id="form-li">
+        <div class="fg"><label class="fl">Email</label><input class="fi" type="email" value="shweta@biomed.in" placeholder="analyst@hospital.com"></div>
+        <div class="fg"><label class="fl">Password</label><input class="fi" type="password" value="••••••••" placeholder="••••••••"></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--s600);cursor:pointer"><input type="checkbox" checked style="accent-color:var(--teal)"> Remember me</label>
+          <span style="font-size:12px;color:var(--teal);cursor:pointer;font-weight:500">Forgot?</span>
+        </div>
+        <button class="btn-p" onclick="loginGo()">Sign In to BioPredict AI</button>
+      </div>
+      <div id="form-reg" style="display:none">
+        <div class="fr">
+          <div class="fg"><label class="fl">First Name</label><input class="fi" placeholder="Shweta"></div>
+          <div class="fg"><label class="fl">Last Name</label><input class="fi" placeholder="Wankhade"></div>
+        </div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" type="email" placeholder="analyst@hospital.com"></div>
+        <div class="fg"><label class="fl">Organisation</label><input class="fi" placeholder="Cancer Research Centre"></div>
+        <div class="fg"><label class="fl">Role</label>
+          <select class="fi"><option>Oncologist</option><option>Pharmacist</option><option>Hospital Admin</option><option>Market Analyst</option></select>
+        </div>
+        <button class="btn-p" onclick="loginGo()">Create Account</button>
+      </div>
+      <div class="div"><hr><span>or continue with</span><hr></div>
+      <div class="soc">
+        <div class="sb">🏥 Hospital SSO</div>
+        <div class="sb">🔬 ResearchID</div>
+        <div class="sb">📊 MedPortal</div>
+      </div>
+      <p class="comply">256-bit encryption · HIPAA Compliant · FDA 21 CFR Part 11</p>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 2: DASHBOARD ══════════════ -->
+<div id="screen-dashboard" class="screen">
+  <div class="page-wrap">
+    <div class="hero-section">
+      <div class="hero-dots"></div>
+      <div class="hero-inner">
+        <div>
+          <div class="hero-badge">Live Market Intelligence · India 2026</div>
+          <div class="hero-title">Trastuzumab Biosimilar Market Hub</div>
+          <div class="hero-sub">Real-time adoption tracking · AI forecasting · HER2+ oncology insights</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="kpi-strip">
+      <div class="kpi"><div class="kpi-ico t"><svg viewBox="0 0 24 24" fill="none" stroke="#0d9488" stroke-width="2"><path d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></div><div><div class="kpi-n">63.8%</div><div class="kpi-lbl">Market Share</div><div class="kpi-ch up">↑ +4.2% QoQ</div></div></div>
+      <div class="kpi"><div class="kpi-ico g"><svg viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div><div><div class="kpi-n">78.3%</div><div class="kpi-lbl">5-Year Forecast</div><div class="kpi-ch up">↑ Optimistic</div></div></div>
+      <div class="kpi"><div class="kpi-ico r"><svg viewBox="0 0 24 24" fill="none" stroke="#e11d48" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div><div class="kpi-n">100</div><div class="kpi-lbl">Respondents</div><div class="kpi-ch up">40 Oncologists</div></div></div>
+      <div class="kpi"><div class="kpi-ico b"><svg viewBox="0 0 24 24" fill="none" stroke="#0ea5e9" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div><div class="kpi-n">0.891</div><div class="kpi-lbl">Model R</div><div class="kpi-ch up">↑ Strong fit</div></div></div>
+    </div>
+
+    <div class="content-area">
+      <div class="g2" style="gap:18px">
+        <div class="card">
+          <div class="ct">5-Year Adoption Forecast</div>
+          <div class="cs">AI-based trastuzumab biosimilar market uptake · 3 scenarios</div>
+          <div class="chart-box"><canvas id="fc1"></canvas></div>
+          <div class="cleg">
+            <div class="cli"><div class="cld" style="background:#059669"></div>Optimistic</div>
+            <div class="cli"><div class="cld" style="background:#3b82f6"></div>Base Case</div>
+            <div class="cli"><div class="cld" style="background:#f59e0b"></div>Pessimistic</div>
+          </div>
+        </div>
+        <div class="gap">
+          <div class="card">
+            <div class="ct">Biosimilar Landscape</div>
+            <div class="cs">Active trastuzumab biosimilars</div>
+            <div class="bio-list">
+              <div class="bio-item"><div class="bio-dot" style="background:#0d9488"></div><div class="bio-name">Ogivri</div><div class="bio-bar"><div class="bio-fill" style="width:71%"></div></div><div class="bio-pct">71%</div></div>
+              <div class="bio-item"><div class="bio-dot" style="background:#7c3aed"></div><div class="bio-name">Herzuma</div><div class="bio-bar"><div class="bio-fill" style="width:58%;background:var(--lav)"></div></div><div class="bio-pct">58%</div></div>
+              <div class="bio-item"><div class="bio-dot" style="background:#0ea5e9"></div><div class="bio-name">Kanjinti</div><div class="bio-bar"><div class="bio-fill" style="width:44%;background:var(--sky)"></div></div><div class="bio-pct">44%</div></div>
+              <div class="bio-item"><div class="bio-dot" style="background:#f59e0b"></div><div class="bio-name">Ontruzant</div><div class="bio-bar"><div class="bio-fill" style="width:36%;background:var(--gold)"></div></div><div class="bio-pct">36%</div></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="ct">Recent Activity</div>
+            <div class="cs">Model updates & alerts</div>
+            <div class="act-list">
+              <div class="act-item"><div class="act-dot-col"><div class="act-dot" style="background:var(--emerald)"></div><div class="act-line"></div></div><div><div class="act-txt">Forecast re-run: Q1 2026 data integrated</div><div class="act-time">2 hours ago</div></div></div>
+              <div class="act-item"><div class="act-dot-col"><div class="act-dot" style="background:var(--gold)"></div><div class="act-line"></div></div><div><div class="act-txt">Physician acceptance score updated: +3%</div><div class="act-time">Yesterday</div></div></div>
+              <div class="act-item"><div class="act-dot-col"><div class="act-dot"></div><div class="act-line"></div></div><div><div class="act-txt">PMJAY reimbursement policy expanded</div><div class="act-time">2 days ago</div></div></div>
+              <div class="act-item"><div class="act-dot-col"><div class="act-dot" style="background:var(--lav)"></div></div><div><div class="act-txt">THP combo forecast updated</div><div class="act-time">3 days ago</div></div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card full" style="margin-top:18px">
+        <div class="ct">Combination Therapy Adoption</div>
+        <div class="cs">Trastuzumab biosimilar in 3 key protocols · Current adoption rates</div>
+        <div class="combo-grid">
+          <div class="combo-card" style="background:linear-gradient(135deg,#f0fdfa,#e0f2fe);border-color:#99f6e4">
+            <div class="combo-tag" style="color:var(--teal)">AC-TH Protocol</div>
+            <div class="combo-n">68%</div>
+            <div class="combo-sub">Anthracycline + Cyclophosphamide + Trastuzumab</div>
+            <div class="combo-bar-bg" style="background:rgba(255,255,255,.6)"><div class="combo-bar-fill" style="width:68%;background:var(--teal)"></div></div>
+          </div>
+          <div class="combo-card" style="background:linear-gradient(135deg,#fdf4ff,#ede9fe);border-color:#ddd6fe">
+            <div class="combo-tag" style="color:var(--lav)">TCH Protocol</div>
+            <div class="combo-n">57%</div>
+            <div class="combo-sub">Docetaxel + Carboplatin + Trastuzumab</div>
+            <div class="combo-bar-bg" style="background:rgba(255,255,255,.6)"><div class="combo-bar-fill" style="width:57%;background:var(--lav)"></div></div>
+          </div>
+          <div class="combo-card" style="background:linear-gradient(135deg,#fff7ed,#fef3c7);border-color:#fde68a">
+            <div class="combo-tag" style="color:var(--gold)">THP Protocol</div>
+            <div class="combo-n">49%</div>
+            <div class="combo-sub">Trastuzumab + Pertuzumab + Docetaxel</div>
+            <div class="combo-bar-bg" style="background:rgba(255,255,255,.6)"><div class="combo-bar-fill" style="width:49%;background:var(--gold)"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 3: CORE FEATURE ══════════════ -->
+<div id="screen-core" class="screen">
+  <div class="page-wrap">
+    <div class="hero-section" style="background:linear-gradient(135deg,#0f766e,#0369a1)">
+      <div class="hero-dots"></div>
+      <div class="hero-inner">
+        <div>
+          <div class="hero-title">AI Prediction Engine</div>
+          <div class="hero-sub">Adjust parameters to model biosimilar adoption across your market</div>
+        </div>
+        <div class="acc-badge">
+          <div class="acc-n">79.4%</div>
+          <div class="acc-l">Model Accuracy (R²=0.794)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="g22" style="gap:18px">
+        <div class="card">
+          <div class="ct">Market Parameters</div>
+          <div class="cs">Tune key adoption drivers (scale 1–5) from research data</div>
+          <div class="param-grid">
+            <div><span class="pl">💊 Physician Accept. <span style="color:var(--rose);font-size:9px">(β=0.398★)</span></span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="4.2" oninput="upv(this,'pa')"><span class="pv" id="v-pa">4.2</span></div></div>
+            <div><span class="pl">🏥 Insurance Cover. <span style="color:var(--rose);font-size:9px">(β=0.289★)</span></span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="3.8" oninput="upv(this,'ic')"><span class="pv" id="v-ic">3.8</span></div></div>
+            <div><span class="pl">💰 Drug Price Sens.</span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="4.1" oninput="upv(this,'dp')"><span class="pv" id="v-dp">4.1</span></div></div>
+            <div><span class="pl">🏛️ Govt. Reimburse.</span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="3.5" oninput="upv(this,'gr')"><span class="pv" id="v-gr">3.5</span></div></div>
+            <div><span class="pl">🔬 Clinical Evidence</span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="4.4" oninput="upv(this,'ce')"><span class="pv" id="v-ce">4.4</span></div></div>
+            <div><span class="pl">📍 Hospital Avail.</span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="3.6" oninput="upv(this,'ha')"><span class="pv" id="v-ha">3.6</span></div></div>
+            <div><span class="pl">👤 Patient Income</span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="3.2" oninput="upv(this,'pi')"><span class="pv" id="v-pi">3.2</span></div></div>
+            <div><span class="pl">📣 Awareness</span><div class="ps-wrap"><input type="range" class="ps" min="1" max="5" step=".1" value="3.9" oninput="upv(this,'ae')"><span class="pv" id="v-ae">3.9</span></div></div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+            <button class="btn-run" id="rbtn" onclick="runModel()">
+              <svg id="ricon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/><path d="M9 12l2 2 4-4"/></svg>
+            <span> Run AI Forecast</span>
+            </button>
+            <span id="rstatus" style="font-size:12px;color:var(--teal);font-weight:500"></span>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="ct">Predictor Importance</div>
+          <div class="cs">Standardised β coefficients</div>
+          <div class="fb-list">
+            <div><div class="fb-hdr"><span class="fb-name">Physician Acceptance</span><span class="fb-pct">39.8%</span></div><div class="fb-bg"><div class="fb-fill" style="width:100%;background:linear-gradient(90deg,#0d9488,#14b8a6)"></div></div></div>
+            <div><div class="fb-hdr"><span class="fb-name">Insurance Coverage</span><span class="fb-pct">28.9%</span></div><div class="fb-bg"><div class="fb-fill" style="width:72.6%;background:linear-gradient(90deg,#7c3aed,#a78bfa)"></div></div></div>
+            <div><div class="fb-hdr"><span class="fb-name">Govt Reimbursement</span><span class="fb-pct">24.6%</span></div><div class="fb-bg"><div class="fb-fill" style="width:61.8%;background:linear-gradient(90deg,#0ea5e9,#38bdf8)"></div></div></div>
+            <div><div class="fb-hdr"><span class="fb-name">Drug Price Sensitivity</span><span class="fb-pct">22.1%</span></div><div class="fb-bg"><div class="fb-fill" style="width:55.5%;background:linear-gradient(90deg,#f59e0b,#fcd34d)"></div></div></div>
+            <div><div class="fb-hdr"><span class="fb-name">Hospital Availability</span><span class="fb-pct">18.7%</span></div><div class="fb-bg"><div class="fb-fill" style="width:47%;background:linear-gradient(90deg,#059669,#34d399)"></div></div></div>
+            <div><div class="fb-hdr"><span class="fb-name">Patient Affordability</span><span class="fb-pct">15.3%</span></div><div class="fb-bg"><div class="fb-fill" style="width:38.4%;background:linear-gradient(90deg,#e11d48,#fb7185)"></div></div></div>
+            <div><div class="fb-hdr"><span class="fb-name">Clinical Evidence</span><span class="fb-pct">12.1%</span></div><div class="fb-bg"><div class="fb-fill" style="width:30.4%;background:linear-gradient(90deg,#78716c,#a8a29e)"></div></div></div>
+          </div>
+          <div class="model-info">
+            <div class="mi-ttl">Model Architecture</div>
+            <div class="mi-grid">
+              <span>Algorithm: MLR + AI Ensemble</span>
+              <span>Sample: n=100 professionals</span>
+              <span>R²=0.794 · Adj.R²=0.781</span>
+              <span>F=63.05, p&lt;0.001</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card full" style="margin-top:18px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:10px">
+          <div><div class="ct">5-Year Adoption Forecast</div><div class="cs">Market share by scenario</div></div>
+          <div class="sc-tabs">
+            <button class="sc-tab active op" onclick="setScen('op',this)">🟢 Optimistic</button>
+            <button class="sc-tab ba" onclick="setScen('ba',this)">🔵 Base Case</button>
+            <button class="sc-tab pe" onclick="setScen('pe',this)">🟡 Pessimistic</button>
+          </div>
+        </div>
+        <div class="tbl-wrap">
+          <table class="tbl" id="ftbl">
+            <thead><tr><th>Year</th><th>Adoption</th><th>Market Share</th><th>Physician</th><th>Insurance</th><th>Progress</th></tr></thead>
+            <tbody id="ftbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 4: ANALYTICS ══════════════ -->
+<div id="screen-analytics" class="screen">
+  <div class="page-wrap">
+    <div class="hero-section" style="background:linear-gradient(135deg,#4c1d95,#0e7490)">
+      <div class="hero-dots"></div>
+      <div class="hero-inner">
+        <div>
+          <div class="hero-title">Analytics & Research Output</div>
+          <div class="hero-sub">Statistical results · Hypothesis testing · Market intelligence</div>
+        </div>
+        <div class="exp-btns">
+          <button class="btn-exp">📊 PDF</button>
+          <button class="btn-exp">📈 Excel</button>
+          <button class="btn-exp">🔗 Share</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="content-area">
+      <div class="card" style="margin-bottom:18px">
+        <div class="ct">Regression Model Summary</div>
+        <div class="cs">Multiple linear regression · R=0.891 · R²=0.794 · F=63.05, p&lt;0.001</div>
+        <div class="reg-grid">
+          <div class="rs"><div class="rs-v">0.891</div><div class="rs-l">Pearson R</div></div>
+          <div class="rs"><div class="rs-v">0.794</div><div class="rs-l">R² (Model Fit)</div></div>
+          <div class="rs"><div class="rs-v">0.781</div><div class="rs-l">Adjusted R²</div></div>
+          <div class="rs"><div class="rs-v">63.05</div><div class="rs-l">F-Statistic</div></div>
+        </div>
+      </div>
+
+      <div class="g22" style="gap:18px;margin-bottom:18px">
+        <div class="card">
+          <div class="ct">Pearson Correlations</div>
+          <div class="cs">With adoption likelihood · p&lt;0.001</div>
+          <div id="corr-bars" style="margin-top:8px"></div>
+        </div>
+        <div class="card">
+          <div class="ct">Hypothesis Testing</div>
+          <div class="cs">All 8 H₀ rejected at α=0.05</div>
+          <div class="hypo-list" id="hypo-list"></div>
+        </div>
+      </div>
+
+      <div class="g3" style="gap:14px;margin-bottom:18px">
+        <div class="met-card tc"><div class="ml">Base Case (2029)</div><div class="mv">68.5%</div><div class="ms">India HER2+ market adoption</div><div class="mini-ch" id="mc1"></div></div>
+        <div class="met-card gc"><div class="ml">Price Savings vs Reference</div><div class="mv">65%</div><div class="ms">Average biosimilar savings</div><div class="mini-ch" id="mc2"></div></div>
+        <div class="met-card lc"><div class="ml">Physician Acceptance</div><div class="mv">80%+</div><div class="ms">Treatment-naïve prescriptions</div><div class="mini-ch" id="mc3"></div></div>
+      </div>
+
+      <div class="card">
+        <div class="ct">Complete 5-Year Scenario Comparison</div>
+        <div class="cs">From research Table 7 · AI-Based Market Adoption Forecast</div>
+        <div class="tbl-wrap" style="margin-top:14px">
+          <table class="tbl">
+            <thead><tr><th>Year</th><th style="color:#059669">Optimistic</th><th style="color:#3b82f6">Base Case</th><th style="color:#f59e0b">Pessimistic</th><th>Key Driver</th></tr></thead>
+            <tbody>
+              <tr><td class="year-c">2025</td><td style="color:#059669;font-weight:700">52%</td><td style="color:#3b82f6;font-weight:700">45%</td><td style="color:#f59e0b;font-weight:700">36%</td><td style="font-size:11px;color:var(--s400)">Policy launch</td></tr>
+              <tr><td class="year-c">2026</td><td style="color:#059669;font-weight:700">59%</td><td style="color:#3b82f6;font-weight:700">51%</td><td style="color:#f59e0b;font-weight:700">41%</td><td style="font-size:11px;color:var(--s400)">Insurance expansion</td></tr>
+              <tr><td class="year-c">2027</td><td style="color:#059669;font-weight:700">66%</td><td style="color:#3b82f6;font-weight:700">57%</td><td style="color:#f59e0b;font-weight:700">45%</td><td style="font-size:11px;color:var(--s400)">Price competition</td></tr>
+              <tr><td class="year-c">2028</td><td style="color:#059669;font-weight:700">73%</td><td style="color:#3b82f6;font-weight:700">62%</td><td style="color:#f59e0b;font-weight:700">49%</td><td style="font-size:11px;color:var(--s400)">Hospital procurement</td></tr>
+              <tr><td class="year-c">2029</td><td style="color:#059669;font-weight:700">78.3%</td><td style="color:#3b82f6;font-weight:700">68.5%</td><td style="color:#f59e0b;font-weight:700">53%</td><td style="font-size:11px;color:var(--s400)">Market maturity</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SCREEN 5: ADMIN ══════════════ -->
+<div id="screen-admin" class="screen">
+  <div class="page-wrap">
+    <div class="admin-layout">
+      <div class="admin-side">
+        <div class="aside-ttl">Management</div>
+        <div class="asi active"><div class="adot" style="background:var(--teal)"></div>User Management</div>
+        <div class="asi"><div class="adot" style="background:var(--gold)"></div>Roles & Permissions</div>
+        <div class="asi"><div class="adot" style="background:var(--lav)"></div>Data Sources</div>
+        <div class="asi"><div class="adot" style="background:var(--sky)"></div>Model Config</div>
+        <hr style="border:none;border-top:1px solid var(--s200);margin:14px 0">
+        <div class="aside-ttl">Settings</div>
+        <div class="asi"><div class="adot" style="background:var(--emerald)"></div>API Integrations</div>
+        <div class="asi"><div class="adot" style="background:var(--rose)"></div>Audit Log</div>
+        <div class="asi"><div class="adot" style="background:var(--s400)"></div>Billing & Plans</div>
+        <div class="plan-card">
+          <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;opacity:.8;margin-bottom:5px">Enterprise Plan</div>
+          <div style="font-size:12px;opacity:.85;margin-bottom:8px">Unlimited forecasts · Priority support</div>
+          <div style="font-size:10px;opacity:.6">Renewal: Apr 1, 2027</div>
+        </div>
+      </div>
+
+      <div class="adm-content">
+        <div class="adm-hdr">
+          <h1>User Management</h1>
+          <button class="btn-add"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add User</button>
+        </div>
+        <div class="adm-stats">
+          <div class="asc"><div class="asc-n" style="color:var(--teal)">24</div><div class="asc-l">Total Users</div></div>
+          <div class="asc"><div class="asc-n" style="color:var(--emerald)">19</div><div class="asc-l">Active This Month</div></div>
+          <div class="asc"><div class="asc-n" style="color:var(--gold)">847</div><div class="asc-l">Forecasts Run</div></div>
+        </div>
+        <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+          <input class="fi" placeholder="Search users..." style="max-width:220px">
+          <select class="fi" style="max-width:140px"><option>All Roles</option><option>Admin</option><option>Analyst</option><option>Viewer</option></select>
+        </div>
+        <div class="users-tbl-wrap">
+          <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
+            <table class="utbl"><thead><tr><th>User</th><th>Role</th><th>Status</th><th>Last Active</th><th>Forecasts</th><th>Actions</th></tr></thead>
+            <tbody id="utbody"></tbody></table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+// ═══════════════════════════════════════════
+// BioPredict AI — Bulletproof JS for GitHub Pages
+// ═══════════════════════════════════════════
+
+var dashChart = null;
+var appReady = false;
+
+// ── SCREEN ROUTING ──
+function go(id) {
+  try {
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) {
+      screens[i].classList.remove('active');
+    }
+    var target = document.getElementById('screen-' + id);
+    if (target) target.classList.add('active');
+
+    var navTabs = document.querySelectorAll('.nav-tab');
+    for (var j = 0; j < navTabs.length; j++) {
+      navTabs[j].classList.toggle('active', navTabs[j].getAttribute('data-s') === id);
+    }
+    var bnavItems = document.querySelectorAll('.bnav-item');
+    for (var k = 0; k < bnavItems.length; k++) {
+      bnavItems[k].classList.toggle('active', bnavItems[k].getAttribute('data-s') === id);
+    }
+    window.scrollTo(0, 0);
+
+    if (id === 'dashboard') setTimeout(initDash, 150);
+    if (id === 'core') initFtbl('op');
+    if (id === 'analytics') setTimeout(initAnalytics, 100);
+    if (id === 'admin') initUsers();
+  } catch(e) {
+    console.error('go() error:', e);
+  }
+}
+
+function loginGo() {
+  try {
+    var mainNav = document.getElementById('main-nav');
+    var bottomNav = document.getElementById('bottom-nav');
+    var userInfo = document.getElementById('nav-user-info');
+    if (mainNav) { mainNav.style.display = 'flex'; }
+    if (bottomNav) { bottomNav.style.display = 'flex'; bottomNav.style.alignItems = 'center'; }
+    if (userInfo) { userInfo.style.display = 'block'; }
+    go('dashboard');
+  } catch(e) {
+    console.error('loginGo() error:', e);
+    // Fallback: just show dashboard screen directly
+    var login = document.getElementById('screen-login');
+    var dash = document.getElementById('screen-dashboard');
+    if (login) login.style.display = 'none';
+    if (dash) dash.style.display = 'block';
+  }
+}
+
+function switchTab(t) {
+  try {
+    var tbLi = document.getElementById('tb-li');
+    var tbReg = document.getElementById('tb-reg');
+    var formLi = document.getElementById('form-li');
+    var formReg = document.getElementById('form-reg');
+    if (tbLi) tbLi.classList.toggle('active', t === 'li');
+    if (tbReg) tbReg.classList.toggle('active', t === 'reg');
+    if (formLi) formLi.style.display = (t === 'li') ? 'block' : 'none';
+    if (formReg) formReg.style.display = (t === 'reg') ? 'block' : 'none';
+  } catch(e) { console.error('switchTab() error:', e); }
+}
+
+// ── DASHBOARD CHART ──
+function initDash() {
+  try {
+    if (typeof Chart === 'undefined') {
+      setTimeout(initDash, 400);
+      return;
+    }
+    var c = document.getElementById('fc1');
+    if (!c) return;
+    if (dashChart) { dashChart.destroy(); dashChart = null; }
+    dashChart = new Chart(c, {
+      type: 'line',
+      data: {
+        labels: ['2024','2025','2026','2027','2028','2029'],
+        datasets: [
+          { label:'Optimistic', data:[42,52,59,66,73,78.3], borderColor:'#059669', backgroundColor:'rgba(5,150,105,.08)', borderWidth:2.5, tension:.4, fill:true, pointBackgroundColor:'#059669', pointRadius:3 },
+          { label:'Base Case', data:[38,45,51,57,62,68.5], borderColor:'#3b82f6', backgroundColor:'rgba(59,130,246,.08)', borderWidth:2.5, tension:.4, fill:true, pointBackgroundColor:'#3b82f6', pointRadius:3 },
+          { label:'Pessimistic', data:[33,36,41,45,49,53], borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,.08)', borderWidth:2.5, tension:.4, fill:true, pointBackgroundColor:'#f59e0b', pointRadius:3 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { mode:'index', intersect:false, backgroundColor:'rgba(15,23,42,.92)', titleColor:'#f1f5f9', bodyColor:'#94a3b8' }
+        },
+        scales: {
+          x: { grid:{ color:'rgba(0,0,0,.04)' }, ticks:{ color:'#94a3b8', font:{ size:10 } } },
+          y: { grid:{ color:'rgba(0,0,0,.04)' }, ticks:{ color:'#94a3b8', font:{ size:10 }, callback: function(v){ return v+'%'; } }, min:25, max:90 }
+        }
+      }
+    });
+  } catch(e) { console.error('initDash() error:', e); }
+}
+
+// ── SLIDERS ──
+function upv(el, k) {
+  try {
+    var v = document.getElementById('v-' + k);
+    if (v) v.textContent = parseFloat(el.value).toFixed(1);
+  } catch(e) {}
+}
+
+// ── RUN MODEL ──
+function runModel() {
+  try {
+    var btn = document.getElementById('rbtn');
+    var st = document.getElementById('rstatus');
+    var ico = document.getElementById('ricon');
+    if (ico) ico.classList.add('spinning');
+    if (btn) btn.style.opacity = '.8';
+    if (st) st.textContent = '';
+    var btnText = btn ? btn.querySelector('span') : null;
+    if (btnText) btnText.textContent = ' Computing...';
+    setTimeout(function() {
+      if (ico) ico.classList.remove('spinning');
+      if (btn) btn.style.opacity = '1';
+      if (btnText) btnText.textContent = ' Run AI Forecast';
+      if (st) { st.textContent = '✓ Forecast updated'; setTimeout(function(){ st.textContent=''; }, 3000); }
+    }, 2200);
+  } catch(e) { console.error('runModel() error:', e); }
+}
+
+// ── FORECAST TABLE ──
+var SD = {
+  op: [{y:2025,a:'52%',m:'18.2%',ph:'74%',ins:'61%',w:52},{y:2026,a:'59%',m:'21.3%',ph:'79%',ins:'67%',w:59},{y:2027,a:'66%',m:'24.8%',ph:'83%',ins:'73%',w:66},{y:2028,a:'73%',m:'28.1%',ph:'87%',ins:'78%',w:73},{y:2029,a:'78.3%',m:'31.5%',ph:'91%',ins:'83%',w:78.3}],
+  ba: [{y:2025,a:'45%',m:'15.4%',ph:'68%',ins:'55%',w:45},{y:2026,a:'51%',m:'18.2%',ph:'72%',ins:'60%',w:51},{y:2027,a:'57%',m:'21.0%',ph:'76%',ins:'65%',w:57},{y:2028,a:'62%',m:'24.1%',ph:'80%',ins:'70%',w:62},{y:2029,a:'68.5%',m:'27.3%',ph:'84%',ins:'75%',w:68.5}],
+  pe: [{y:2025,a:'36%',m:'12.1%',ph:'61%',ins:'48%',w:36},{y:2026,a:'41%',m:'14.3%',ph:'65%',ins:'52%',w:41},{y:2027,a:'45%',m:'16.8%',ph:'68%',ins:'56%',w:45},{y:2028,a:'49%',m:'19.2%',ph:'71%',ins:'60%',w:49},{y:2029,a:'53%',m:'21.9%',ph:'75%',ins:'64%',w:53}]
+};
+
+function initFtbl(s) {
+  try {
+    var tb = document.getElementById('ftbody');
+    if (!tb) return;
+    var rows = SD[s];
+    var html = '';
+    for (var i = 0; i < rows.length; i++) {
+      var r = rows[i];
+      html += '<tr><td class="year-c">' + r.y + '</td><td class="adop-c">' + r.a + '</td><td>' + r.m + '</td><td>' + r.ph + '</td><td>' + r.ins + '</td><td><div class="pm"><div class="pmf" style="width:' + r.w + '%"></div></div></td></tr>';
+    }
+    tb.innerHTML = html;
+  } catch(e) { console.error('initFtbl() error:', e); }
+}
+
+function setScen(s, btn) {
+  try {
+    var tabs = document.querySelectorAll('.sc-tab');
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.remove('active');
+    if (btn) btn.classList.add('active');
+    initFtbl(s);
+  } catch(e) {}
+}
+
+// ── ANALYTICS ──
+function initAnalytics() {
+  try {
+    var corrs = [
+      {n:'Physician Acceptance',r:.73,c:'#0d9488'},
+      {n:'Insurance Coverage',r:.71,c:'#7c3aed'},
+      {n:'Govt Reimbursement',r:.65,c:'#0ea5e9'},
+      {n:'Drug Price Sensitivity',r:.62,c:'#f59e0b'},
+      {n:'Hospital Availability',r:.59,c:'#059669'},
+      {n:'Patient Affordability',r:.55,c:'#e11d48'},
+      {n:'Clinical Evidence',r:.52,c:'#78716c'}
+    ];
+    var cb = document.getElementById('corr-bars');
+    if (cb) {
+      var html = '';
+      for (var i = 0; i < corrs.length; i++) {
+        var d = corrs[i];
+        html += '<div style="margin-bottom:9px"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;color:var(--s700)">' + d.n + '</span><span style="font-family:monospace;font-size:11px;color:' + d.c + ';font-weight:700">r=' + d.r + '</span></div><div style="height:6px;background:var(--s100);border-radius:4px;overflow:hidden"><div style="height:100%;width:' + (d.r*100) + '%;background:' + d.c + ';border-radius:4px"></div></div></div>';
+      }
+      cb.innerHTML = html;
+    }
+
+    var hypos = [
+      {h:'H₁: Price sensitivity → adoption',t:'4.82',p:'<0.001'},
+      {h:'H₂: Physician acceptance → adoption',t:'7.91',p:'<0.001'},
+      {h:'H₃: Hospital availability → adoption',t:'5.13',p:'<0.001'},
+      {h:'H₄: Insurance coverage → adoption',t:'6.74',p:'<0.001'},
+      {h:'H₅: Govt reimbursement → adoption',t:'5.38',p:'<0.001'},
+      {h:'H₆: Patient affordability → adoption',t:'4.21',p:'0.003'}
+    ];
+    var hl = document.getElementById('hypo-list');
+    if (hl) {
+      var hhtml = '';
+      for (var j = 0; j < hypos.length; j++) {
+        var h = hypos[j];
+        hhtml += '<div class="hy-item"><div class="hy-st ok">✓</div><div class="hy-txt">' + h.h + '</div><div style="text-align:right"><div style="font-size:10px;color:var(--s600)">t=' + h.t + '</div><div class="hy-pv">p' + h.p + '</div></div></div>';
+      }
+      hl.innerHTML = hhtml;
+    }
+
+    function makeBars(id, vals, col) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      var mx = Math.max.apply(null, vals);
+      var bhtml = '';
+      for (var x = 0; x < vals.length; x++) {
+        var ht = (vals[x]/mx)*100;
+        var op = 0.4 + 0.6*(x/(vals.length-1));
+        bhtml += '<div class="mc-bar" style="height:' + ht + '%;background:' + col + ';opacity:' + op + '"></div>';
+      }
+      el.innerHTML = bhtml;
+    }
+    makeBars('mc1', [38,45,51,57,62,68.5], 'var(--teal)');
+    makeBars('mc2', [45,50,55,58,62,65], 'var(--gold)');
+    makeBars('mc3', [65,68,72,76,78,80], 'var(--lav)');
+  } catch(e) { console.error('initAnalytics() error:', e); }
+}
+
+// ── USERS TABLE ──
+var USERS = [
+  {n:'Dr. Shweta Wankhade',e:'shweta@biomed.in',r:'Admin',s:'active',l:'Today',f:142,c:'#0d9488',i:'SW'},
+  {n:'Dr. Shruti Bhowmick',e:'shruti@onccare.in',r:'Analyst',s:'active',l:'2h ago',f:87,c:'#7c3aed',i:'SB'},
+  {n:'Prof. Rahul Sharma',e:'rsharma@nimhans.in',r:'Admin',s:'active',l:'Yesterday',f:203,c:'#059669',i:'RS'},
+  {n:'Dr. Anita Patel',e:'apatel@apollo.in',r:'Analyst',s:'active',l:'3 days ago',f:56,c:'#0ea5e9',i:'AP'},
+  {n:'Mr. Vikram Nair',e:'vnair@piramal.com',r:'Viewer',s:'inactive',l:'2 weeks ago',f:23,c:'#f59e0b',i:'VN'},
+  {n:'Dr. Priya Menon',e:'priya@manipal.com',r:'Analyst',s:'active',l:'Today',f:91,c:'#e11d48',i:'PM'}
+];
+
+function initUsers() {
+  try {
+    var tb = document.getElementById('utbody');
+    if (!tb) return;
+    var html = '';
+    for (var i = 0; i < USERS.length; i++) {
+      var u = USERS[i];
+      html += '<tr><td><div class="uav-c"><div class="uav" style="background:' + u.c + '">' + u.i + '</div><div><div class="unm">' + u.n + '</div><div class="uem">' + u.e + '</div></div></div></td><td><span class="rbadge rb-' + u.r.toLowerCase() + '">' + u.r + '</span></td><td><span class="sts sts-' + (u.s==='active'?'a':'i') + '">' + (u.s==='active'?'Active':'Inactive') + '</span></td><td style="color:var(--s400);font-size:11px">' + u.l + '</td><td style="font-family:monospace;color:var(--teal);font-weight:700;font-size:12px">' + u.f + '</td><td><button class="act-btn">Edit</button><button class="act-btn" style="color:#e11d48">Remove</button></td></tr>';
+    }
+    tb.innerHTML = html;
+  } catch(e) { console.error('initUsers() error:', e); }
+}
+
+// ── INIT ON PAGE LOAD ──
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    // Ensure login screen is active
+    var loginScreen = document.getElementById('screen-login');
+    var screens = document.querySelectorAll('.screen');
+    for (var i = 0; i < screens.length; i++) screens[i].classList.remove('active');
+    if (loginScreen) loginScreen.classList.add('active');
+    console.log('BioPredict AI loaded successfully ✅');
+  } catch(e) { console.error('DOMContentLoaded error:', e); }
+});
+</script>
+</body>
+</html>
